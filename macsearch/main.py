@@ -35,7 +35,7 @@ def main() -> None:
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='Search network device information by MAC address.')
+    parser = argparse.ArgumentParser(prog='macsearch', description='Search network device manufacturer by MAC address.')
     parser.add_argument('mac', help='MAC address')
     parser.add_argument('--api-key', help=f'API key to use, supersedes environment variable {API_KEY_ENV_VAR_NAME}')
 
