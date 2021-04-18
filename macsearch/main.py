@@ -19,21 +19,19 @@ def main() -> None:
         _print_error_and_exit('Missing API key')
 
     try:
-        response = query_api(
-            api_key=args.api_key,
-            mac_address=args.mac,
-        )
+        response = query_api(api_key=args.api_key, mac_address=args.mac)
     except requests.RequestException as e:
-        _print_error_and_exit(f'Error while doing a request: {e}')
+        _print_error_and_exit(f'Error while doing the request: {e}')
 
-    response_json = response.json()
-    if response.status_code == requests.codes.ok:
-        manufacturer_name = response_json['vendorDetails']['companyName']
-        print(f'Company that manufactured the device with MAC address {args.mac} is:\n'
-              f'{manufacturer_name}')
-    else:
-        error_message = response_json['error']
-        _print_error_and_exit(f'API error: {error_message}')
+    try:
+        response_json = response.json()
+    except ValueError:
+        _print_error_and_exit('Error while parsing JSON response')
+
+    try:
+        _print_device_manufacturer(response_json, response.status_code, mac_address=args.mac)
+    except KeyError as e:
+        _print_error_and_exit(f'Expected response JSON key not found: {e}')
 
 
 def _parse_args() -> argparse.Namespace:
@@ -61,6 +59,16 @@ def query_api(api_key: str, mac_address: str) -> requests.Response:
     }
     response = requests.get(API_URL, params=api_params, timeout=REQUEST_TIMEOUT)
     return response
+
+
+def _print_device_manufacturer(response_json: dict[str, Any], response_status_code: int, mac_address: str) -> None:
+    if response_status_code == requests.codes.ok:
+        manufacturer_name = response_json['vendorDetails']['companyName']
+        print(f'Company that manufactured the device with MAC address {mac_address} is:\n'
+              f'{manufacturer_name}')
+    else:
+        error_message = response_json['error']
+        _print_error_and_exit(f'API error: {error_message}')
 
 
 if __name__ == '__main__':
