@@ -24,7 +24,17 @@ hand, when provided, it will supersede the value set by that environment variabl
 To see parameters and options available when running the tool:
 
 ```shell
-python -m macsearch --help
+$ python -m macsearch --help
+usage: macsearch [-h] [--api-key API_KEY] mac
+
+Search network device manufacturer by MAC address.
+
+positional arguments:
+  mac                MAC address
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --api-key API_KEY  API key to use, supersedes environment variable MACSEARCH_API_KEY
 ```
 
 ## `setup.py` installation
